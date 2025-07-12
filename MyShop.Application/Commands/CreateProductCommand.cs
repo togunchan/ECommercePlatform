@@ -1,5 +1,6 @@
 using MediatR;
 using System;
+using System.Collections.Specialized;
 
 namespace MyShop.Application.Commands
 {
@@ -11,5 +12,12 @@ namespace MyShop.Application.Commands
         public string Name { get; set; } = null!;
         public decimal Price { get; set; }
         public string? Description { get; set; }
+
+        public CreateProductCommand(string name, decimal price, string? description)
+        {
+            Name = name;
+            Price = price;
+            Description = description;
+        }
     }
 }
