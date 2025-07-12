@@ -26,5 +26,12 @@ namespace MyShop.Application.Interfaces
         /// </summary>
         /// <returns>A collection of product entities.</returns>
         Task<IEnumerable<Product>> ListAllAsync();
+
+        /// <summary>
+        /// Updates an existing product.
+        /// </summary>
+        /// <param name="product">The updated product entity.</param>
+        Task UpdateAsync(Product product);
+
     }
 }

@@ -1,6 +1,7 @@
 using MyShop.Application.Queries;
 using MyShop.Application.Interfaces;
 using MyShop.Domain.Entities;
+using Microsoft.VisualBasic;
 
 namespace MyShop.Tests.Application.Queries
 {
@@ -31,7 +32,7 @@ namespace MyShop.Tests.Application.Queries
 
         private class FakeProductRepository : IProductRepository
         {
-            private readonly List<Product> _products;
+            private readonly List<Product> _products = new();
 
             public FakeProductRepository(List<Product> products)
             {
@@ -52,6 +53,16 @@ namespace MyShop.Tests.Application.Queries
             {
                 _products.Add(product);
                 return Task.FromResult(product.Id);
+            }
+
+            public Task UpdateAsync(Product product)
+            {
+                var index = _products.FindIndex(p => p.Id == product.Id);
+                if (index != -1)
+                {
+                    _products[index] = product;
+                }
+                return Task.CompletedTask;
             }
         }
     }

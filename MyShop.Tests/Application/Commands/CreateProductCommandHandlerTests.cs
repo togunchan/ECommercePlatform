@@ -12,6 +12,7 @@ namespace MyShop.Tests.Application.Commands
     {
         private class FakeProductRepository : IProductRepository
         {
+            private readonly List<Product> _products = new();
             public Task<Guid> AddAsync(Product product)
             {
                 return Task.FromResult(product.Id);
@@ -19,6 +20,16 @@ namespace MyShop.Tests.Application.Commands
 
             public Task<Product?> GetByIdAsync(Guid id) => Task.FromResult<Product?>(null);
             public Task<IEnumerable<Product>> ListAllAsync() => Task.FromResult<IEnumerable<Product>>(Array.Empty<Product>());
+
+            public Task UpdateAsync(Product product)
+            {
+                var index = _products.FindIndex(p => p.Id == product.Id);
+                if (index != -1)
+                {
+                    _products[index] = product;
+                }
+                return Task.CompletedTask;
+            }
         }
 
 

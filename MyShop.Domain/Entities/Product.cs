@@ -5,9 +5,9 @@ namespace MyShop.Domain.Entities
     public class Product
     {
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public decimal Price { get; private set; }
-        public string? Description { get; private set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string? Description { get; set; }
 
         public Product(Guid id, string name, decimal price, string? description = null)
         {
@@ -46,5 +46,20 @@ namespace MyShop.Domain.Entities
         {
             Description = newDescription;
         }
+
+        public void UpdateProduct(string name, decimal price, string? description = null)
+        {
+
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+
+            if (price < 0)
+                throw new ArgumentOutOfRangeException(nameof(price), "Price must be greater than or equal to zero.");
+
+            Name = name;
+            Price = price;
+            Description = description;
+        }
+
     }
 }
