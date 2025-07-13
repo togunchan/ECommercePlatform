@@ -66,6 +66,12 @@ namespace MyShop.Tests.Application.Queries
                 }
                 return Task.CompletedTask;
             }
+
+            public Task<bool> DeleteAsync(Guid id)
+            {
+                var removed = _products.RemoveAll(p => p.Id == id) > 0;
+                return Task.FromResult(removed);
+            }
         }
     }
 }

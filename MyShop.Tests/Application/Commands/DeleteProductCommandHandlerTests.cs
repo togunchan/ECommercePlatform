@@ -1,14 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 using MyShop.Application.Commands;
 using MyShop.Application.Interfaces;
 using MyShop.Domain.Entities;
 
 namespace MyShop.Tests.Application.Commands
 {
-    public class UpdateProductCommandHandlerTests
+    public class DeleteProductCommandHandlerTests
     {
         private class FakeProductRepository : IProductRepository
         {
-            private readonly List<Product> _products = new();
+            public List<Product> _products = new();
 
             public Task<Guid> AddAsync(Product product)
             {
@@ -18,20 +23,17 @@ namespace MyShop.Tests.Application.Commands
 
             public Task<Product?> GetByIdAsync(Guid id)
             {
-                return Task.FromResult(_products.Find(p => p.Id == id));
+                var product = _products.Find(p => p.Id == id);
+                return Task.FromResult<Product?>(product);
             }
 
-            public Task<IEnumerable<Product>> ListAllAsync()
-            {
-                return Task.FromResult<IEnumerable<Product>>(_products);
-            }
+            public Task<IEnumerable<Product>> ListAllAsync() => Task.FromResult<IEnumerable<Product>>(_products);
 
             public Task UpdateAsync(Product product)
             {
                 var index = _products.FindIndex(p => p.Id == product.Id);
                 if (index != -1)
                     _products[index] = product;
-
                 return Task.CompletedTask;
             }
 
@@ -43,33 +45,23 @@ namespace MyShop.Tests.Application.Commands
         }
 
         [Fact]
-        public async Task Handle_ValidCommand_UpdatesProduct()
+        public async Task Handle_ExistingProductId_DeletesProductAndReturnsTrue()
         {
             // Arrange
-            var product = new Product(Guid.NewGuid(), "Old Name", 10.0m, "Old Desc");
             var repository = new FakeProductRepository();
+            var product = new Product(Guid.NewGuid(), "To be deleted", 10m, "temp");
             await repository.AddAsync(product);
 
-            var command = new UpdateProductCommand
-            (
-                product.Id,
-                "New Name",
-                99.99m,
-                "New Desc"
-            );
-
-            var handler = new UpdateProductCommandHandler(repository);
+            var handler = new DeleteProductCommandHandler(repository);
+            var command = new DeleteProductCommand(product.Id);
 
             // Act
-            await handler.Handle(command, CancellationToken.None);
+            var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            var updated = await repository.GetByIdAsync(product.Id);
-
-            Assert.NotNull(updated);
-            Assert.Equal("New Name", updated.Name);
-            Assert.Equal(99.99m, updated.Price);
-            Assert.Equal("New Desc", updated.Description);
+            Assert.True(result);
+            var deleted = await repository.GetByIdAsync(product.Id);
+            Assert.Null(deleted);
         }
     }
 }

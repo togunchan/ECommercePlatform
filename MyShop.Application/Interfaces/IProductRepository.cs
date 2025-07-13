@@ -33,5 +33,12 @@ namespace MyShop.Application.Interfaces
         /// <param name="product">The updated product entity.</param>
         Task UpdateAsync(Product product);
 
+        /// <summary>
+        /// Deletes a product by its Id.
+        /// </summary>
+        /// <param name="id">The Guid of the product to delete.</param>
+        /// <returns>True if deleted, false if not found.</returns>
+        Task<bool> DeleteAsync(Guid id);
+
     }
 }
